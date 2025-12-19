@@ -133,13 +133,6 @@ class SaveJPGImage:
         if not os.path.exists(preview_dir):
             os.makedirs(preview_dir, exist_ok=True)
         
-        # 确定实际保存目录
-        actual_dir = save_path.strip() if save_path and save_path.strip() else preview_dir
-        
-        # 确保实际保存目录存在
-        if not os.path.exists(actual_dir):
-            os.makedirs(actual_dir, exist_ok=True)
-        
         batch_size = images.shape[0]
         saved_images = []
         
@@ -162,18 +155,11 @@ class SaveJPGImage:
             timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
             filename = f"{filename_prefix}{timestamp}_{i+1}.jpg"
             
-            # 保存到实际目录
-            actual_file_path = os.path.join(actual_dir, filename)
-            pil_img.save(actual_file_path, format="JPEG", quality=90, optimize=True)
-            
-            # 对于预览，确保图片在output目录中
-            preview_file_path = os.path.join(preview_dir, filename)
-            if actual_dir != preview_dir:
-                # 如果保存到自定义目录，也复制一份到preview目录用于预览
-                pil_img.save(preview_file_path, format="JPEG", quality=90, optimize=True)
+            # 固定保存到output目录
+            file_path = os.path.join(preview_dir, filename)
+            pil_img.save(file_path, format="JPEG", quality=90, optimize=True)
             
             # 记录保存的图像信息，用于预览
-            # ComfyUI预览需要图片在output目录中，subfolder为空
             saved_images.append({
                 "filename": filename,
                 "subfolder": "",
